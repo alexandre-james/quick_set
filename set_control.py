@@ -2,10 +2,11 @@ import maya.cmds as cmds
 from PySide2 import QtCore, QtGui, QtWidgets
 from maya import OpenMayaUI as omui
 from shiboken2 import wrapInstance
-import custom_title_bar2 as tb
+from . import custom_title_bar2 as tb
 import os, string
-import set_control_ui as ui
-import set_control_mel as engine
+from . import set_control_ui as ui
+from . import set_control_mel as engine
+from importlib import reload
 reload(engine)
 reload(ui)
  
@@ -97,8 +98,9 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 
 		#-------------------------------------------------Create settings
 		self.settings = QtCore.QSettings('PixelEmbargo','QuickSet')
-		geometry = self.settings.value('geometry', '')
-		self.restoreGeometry(geometry)
+		geometry = self.settings.value('geometry')
+		if geometry:
+			self.restoreGeometry(geometry)
 
 		#-------------------------------------Add custom toolbar
 		self.tlayout = QtWidgets.QVBoxLayout()
@@ -240,12 +242,12 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		self.table_item(table, self.recent_set, new_row_id)
 		# self.build_tab(table)
 		try:
-			print self.recent_set
+			print(self.recent_set)
 			current = table.findItems(self.recent_set, QtCore.Qt.MatchExactly)
 			table.setCurrentItem(current[0])
 			# self.set_button_text(self.b_select, current[0].text())
 		except Exception as e:
-			print str(e)
+			print(str(e))
 		self.new_flag = 1
 		return self.recent_set
 
@@ -264,6 +266,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 
 	@UserDecorators.undoable
 	def clear_set(self, q_set):
+		print("Set: {}".format(q_set))
 		engine.clear_set(q_set)
 		self.cleared_sets.append(q_set)
 		self.update_value(q_set)
@@ -368,7 +371,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 
 	def set_current(self):
 		items = [i.text() for i in self.tableWidget.selectedItems()][::2]
-		print 'Current:', items
+		print('Current:', items)
 		self.recent_set = items
 		# self.set_button_text(self.b_select, items)
 		# engine.component_select(items)
@@ -429,13 +432,13 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		
 		#----------------------------------------------if no changes in sets stop here
 		if self.rename_flag == 1:
-			print 'Set renamed'
+			print('Set renamed')
 			self.scene_items = engine.scene_items()
 			self.rename_flag = 0
 			return
 		#---------------------------------------------if renamed stop here
 		if self.new_flag == 1:
-			print 'new Set created'
+			print('new Set created')
 			self.scene_items = engine.scene_items()
 			self.new_flag = 0
 			return
@@ -444,20 +447,20 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		if self.del_flag == 1:
 			self.del_flag = 0
 			self.scene_items = engine.scene_items()
-			print 'Set deleted'
+			print('Set deleted')
 			return
 
 		if self.delete_all_flag == 1:
 			self.scene_items = engine.scene_items()
 			self.delete_all_flag = 0
-			print ' Batch delete '
+			print(' Batch delete ')
 			return
 
 
 		if  self.clear_all_flag == 1:
 				self.clear_all_flag = 0
 				self.scene_items = engine.scene_items()
-				print ' Batch clear '
+				print(' Batch clear ')
 				return
 
 		if self.cleared_sets:
@@ -469,19 +472,19 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 				else:
 					self.update_value(q_set)
 					self.cleared_sets.remove(q_set)
-					#print 'set is updated'
+					#print('set is updated'
 
 		if  not self.scene_changed():
 			return
 
 		#----------------------------------------------if no changes in scene stop here
 		if not self.sets_changed():
-			print 'new objects in scene, same sets though, updating table....'
+			print('new objects in scene, same sets though, updating table....')
 			[self.update_value(q_set) for q_set in engine.set_list()]
 			self.scene_items = engine.scene_items()
 			return
 		#----------------------------------------- if sets deleted in plugin stop here
-		print ' sets changed in Maya'
+		print(' sets changed in Maya')
 		self.maya_changes()
 		self.del_flag = 0
 		self.scene_items = engine.scene_items()
@@ -509,8 +512,8 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		changed_sets = self.returnNotMatches(new_set_list, old_set_list)
 		new_sets = changed_sets[0][::-1] #reversed order
 		deleted_sets = changed_sets[1]
-		# print 'DELETED >>>>>', deleted_sets
-		# print 'NEW>>>>', new_sets
+		# print('DELETED >>>>>', deleted_sets
+		# print('NEW>>>>', new_sets
 		if deleted_sets:
 			[self.delete_set(q_set) for q_set in deleted_sets if deleted_sets ]
 		if new_sets: 
@@ -585,10 +588,10 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		#---------------------------Blend menu colors
 		palette = self.palette()
 		base_clr = palette.base().color()
-		print base_clr
+		print(base_clr)
 		clrs_blended = [self.blendColors(base_clr, QtGui.QColor(i), ratio=0, alpha=150) for i in menu_colors]
 		clrs_blended.insert(0, base_clr)
-		print 'blended clrs>>', clrs_blended
+		print('blended clrs>>', clrs_blended)
 
 		table = self.tableWidget
 		self.cmenu = QtWidgets. QMenu(table)
@@ -620,7 +623,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		empty=None
 		#-------------------------Create pixmap for color
 		pixmap = QtGui.QPixmap(26,26)
-		print 'item color>>>', item_color
+		print('item color>>>', item_color)
 		pixmap.fill(item_color)
 		#----------------------------------------
 		new_item = QtWidgets.QAction(pixmap, empty, table)
@@ -642,7 +645,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 
 	@UserDecorators.undoable
 	def clear_all(self):
-		[self.clear_set(s) for s in engine.set_list() ]
+		[self.clear_set([s]) for s in engine.set_list() ]
 		self.clear_all_flag = 1
 
 
@@ -686,7 +689,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 	def closeEvent(self, event):
 		# cmds.scriptJob( kill=Set_control_window.trigger_undo, force=True )
 		# cmds.scriptJob( kill=Set_control_window.trigger_set_mod, force=True )
-		# print 'Sets control closed'
+		# print('Sets control closed'
 		geometry = self.saveGeometry()
 		self.settings.setValue('geometry', geometry)
 		self.stop_timer()
@@ -700,7 +703,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 
 def maya_main_window():
 		main_window_ptr = omui.MQtUtil.mainWindow()
-		return wrapInstance(long(main_window_ptr), QtWidgets.QMainWindow)
+		return wrapInstance(int(main_window_ptr), QtWidgets.QMainWindow)
 
 
 def show():
