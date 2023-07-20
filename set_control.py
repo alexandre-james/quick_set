@@ -96,12 +96,6 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		self.clear_all_flag = 0
 		self.tab_row_height = 22
 
-		#-------------------------------------------------Create settings
-		self.settings = QtCore.QSettings('PixelEmbargo','QuickSet')
-		geometry = self.settings.value('geometry')
-		if geometry:
-			self.restoreGeometry(geometry)
-
 		#-------------------------------------Add custom toolbar
 		self.tlayout = QtWidgets.QVBoxLayout()
 		self.title_bar = MyBar(self)
@@ -116,18 +110,20 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 
 		#-----------------------------------------------------Startup
 		self.setupUi(self)
-		self.setMinimumSize(150, 180)
-		self.resize(180, 250)
+		self.setMinimumSize(200, 200)
+		self.resize(300, 400)
 		self.my_timer()
 		self.scene_items = engine.scene_items()
 		# self.set_triggers()
 		self.setWindowTitle('Quick set')
 
+		#-------------------------------------------------Create settings
+		self.settings = QtCore.QSettings('PixelEmbargo','QuickSet')
+		geometry = self.settings.value('geometry')
+		if geometry:
+			self.restoreGeometry(geometry)
 
-		
-
-
-	#----------------------------------------------------------------Apply CSS File
+		#----------------------------------------------------------------Apply CSS File
 		dirpath = os.path.dirname(os.path.abspath(__file__))
 		css_file = 'scheme.qss'
 		# join and fix slashes direction
