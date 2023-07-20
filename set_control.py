@@ -9,7 +9,7 @@ from . import set_control_mel as engine
 from importlib import reload
 reload(engine)
 reload(ui)
- 
+
 # --------------------------------------------------- High DPI monitors adaptation
 if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
 	QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
@@ -117,7 +117,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		#-----------------------------------------------------Startup
 		self.setupUi(self)
 		self.setMinimumSize(150, 180)
-		self.resize(180, 250)
+		self.resize(300, 400)
 		self.my_timer()
 		self.scene_items = engine.scene_items()
 		# self.set_triggers()
@@ -371,6 +371,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 
 	def set_current(self):
 		items = [i.text() for i in self.tableWidget.selectedItems()][::2]
+		engine.select_set(items)
 		print('Current:', items)
 		self.recent_set = items
 		# self.set_button_text(self.b_select, items)
