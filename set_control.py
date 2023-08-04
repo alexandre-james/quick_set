@@ -129,7 +129,9 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
         if geometry:
             self.restoreGeometry(geometry)
 
-        self.auto_select = self.settings.value('auto_select')
+        # Load the 'auto_select' value from the settings. If the value is not found,
+        # default to False. Use type=bool to convert the QVariant to a boolean.
+        self.auto_select = self.settings.value('auto_select', False, type=bool)
         if self.auto_select:
             self.b_auto.setChecked(True)
 
@@ -671,18 +673,9 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
     # -----------------------------------------------Close event
 
     def closeEvent(self, event):
-        # cmds.scriptJob( kill=Set_control_window.trigger_undo, force=True )
-        # cmds.scriptJob( kill=Set_control_window.trigger_set_mod, force=True )
-        # print('Sets control closed'
-        # geometry = self.saveGeometry()
-        # self.settings.setValue('geometry', geometry)
-        # self.settings.setValue('auto_select', self.auto_select)
-        # self.stop_timer()
-        # Set_control_window.deleteLater()
-        # return super().closeEvent(event)
+        self.stop_timer()
         self.settings.setValue('geometry', self.saveGeometry())
         self.settings.setValue('auto_select', self.auto_select)
-        # QtWidgets.QDialog.closeEvent(self, event)
         super(Set_control_main, self).closeEvent(event)
 
 

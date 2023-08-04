@@ -1,1 +1,4 @@
-from Sets_control import sets_control
+from quick_set import set_control
+from importlib import reload
+reload(set_control)
+set_control.show()
