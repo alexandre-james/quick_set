@@ -308,6 +308,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 
     def auto_select_toggle(self):
         self.auto_select = not self.auto_select
+        self.b_auto.setChecked(self.auto_select)
 
     def update_value(self, q_set):
         table = self.tableWidget
@@ -681,6 +682,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
         # return super().closeEvent(event)
         self.settings.setValue('geometry', self.saveGeometry())
         self.settings.setValue('auto_select', self.auto_select)
+        # QtWidgets.QDialog.closeEvent(self, event)
         super(Set_control_main, self).closeEvent(event)
 
 
