@@ -41,6 +41,17 @@ class Ui_Sets(object):
         self.b_select.setObjectName("b_select")
         self.horizontalLayout.addWidget(self.b_select)
 
+        self.b_auto = QtWidgets.QCheckBox(Sets)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.b_auto.sizePolicy().hasHeightForWidth())
+        self.b_auto.setSizePolicy(sizePolicy)
+        self.b_auto.setStyleSheet("border:none")
+        self.b_auto.setText("Auto")
+        self.b_auto.setObjectName("b_auto")
+        self.horizontalLayout.addWidget(self.b_auto)
+
         self.b_add = QtWidgets.QPushButton(Sets)
         self.b_add.setEnabled(True)
         self.b_add.setStyleSheet("border:none")

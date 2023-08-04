@@ -95,6 +95,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		self.delete_all_flag = 0
 		self.clear_all_flag = 0
 		self.tab_row_height = 22
+		self.auto_select = False
 
 		#-------------------------------------Add custom toolbar
 		self.tlayout = QtWidgets.QVBoxLayout()
@@ -122,6 +123,10 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		geometry = self.settings.value('geometry')
 		if geometry:
 			self.restoreGeometry(geometry)
+
+		self.auto_select = self.settings.value('auto_select')
+		if self.auto_select:
+			self.b_auto.setChecked(True)
 
 		#----------------------------------------------------------------Apply CSS File
 		dirpath = os.path.dirname(os.path.abspath(__file__))
@@ -163,6 +168,7 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		self.b_delete.setToolTip('Delete')
 		self.b_color.setToolTip('Assign color')
 		self.b_menu.setToolTip('Extra functions')
+		self.b_auto.setToolTip("Auto Select")
 
 		#---------------------------------------Button functions
 		self.b_new.clicked.connect(self.new_set)
@@ -173,6 +179,8 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		self.b_delete.clicked.connect(lambda : self.delete_set(self.recent_set))
 		self.b_menu.released.connect(self.menu_build)
 		self.b_color.released.connect(self.color_menu)
+		self.b_auto.clicked.connect(self.auto_select_toggle)
+
 		table = self.tableWidget
 		table.itemSelectionChanged.connect(self.set_current)
 
@@ -301,6 +309,9 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 			engine.clear_selection()
 
 
+	def auto_select_toggle(self):
+		self.auto_select = not self.auto_select
+
 
 	def update_value(self, q_set):
 		table = self.tableWidget
@@ -367,6 +378,9 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 
 	def set_current(self):
 		items = [i.text() for i in self.tableWidget.selectedItems()][::2]
+		if self.auto_select:
+			print('Auto select')
+			engine.select_set(items)
 		print('Current:', items)
 		self.recent_set = items
 		# self.set_button_text(self.b_select, items)
@@ -688,9 +702,10 @@ class Set_control_main(ui.Ui_Sets, QtWidgets.QWidget):
 		# print('Sets control closed'
 		geometry = self.saveGeometry()
 		self.settings.setValue('geometry', geometry)
+		self.settings.setValue('auto_select', self.auto_select)
 		self.stop_timer()
 		Set_control_window.deleteLater()
-		return super( QtWidgets.QDialog, self ).closeEvent( event )
+		return super().closeEvent( event )
 
 
 
